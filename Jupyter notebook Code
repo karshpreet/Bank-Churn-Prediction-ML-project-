@@ -1,0 +1,100 @@
+#Step 1 import library
+import numpy as np
+import pandas as pd
+import matplotlib .pyplot as plt
+import seaborn as sns
+
+#Step 2 
+df=pd.read_csv('https://github.com/YBIFoundation/Dataset/raw/main/Bank%20Churn%20Modelling.csv')
+
+df.head()
+
+#Is there any missing value 
+df.isna().sum()
+
+df.info()
+
+df.columns
+
+
+df1=df[['CreditScore', 'Geography', 'Gender', 'Age',
+       'Tenure', 'Balance', 'Num Of Products', 'Has Credit Card',
+       'Is Active Member', 'Estimated Salary', 'Churn']]
+      
+
+df1=pd.get_dummies(df1)
+
+
+df1.head()
+
+df1.Churn.value_counts()
+
+# define y and x or variables 
+df1.columns
+
+y = df1['Churn']
+X = df1[['CreditScore', 'Age', 'Tenure', 'Balance', 'Num Of Products',
+       'Has Credit Card', 'Is Active Member', 'Estimated Salary',
+       'Geography_France', 'Geography_Germany', 'Geography_Spain',
+       'Gender_Female', 'Gender_Male']]
+
+X
+
+y.value_counts()
+
+# imblearn undersampling
+from imblearn.under_sampling import RandomUnderSampler
+rus = RandomUnderSampler()
+X_rus, y_rus = rus.fit_resample(X,y)
+
+X.shape, X_rus.shape
+
+y.value_counts(), y_rus.value_counts()
+
+# imblearn over sampling
+from imblearn.over_sampling import RandomOverSampler
+ros = RandomOverSampler()
+X_ros, y_ros = ros.fit_resample(X,y)
+
+X.shape, X_ros.shape
+
+y.value_counts(), y_ros.value_counts()
+
+# step train test split of original data
+from sklearn.model_selection import train_test_split
+X_train,X_test, y_train,y_test = train_test_split(X,y, random_state=2529)
+
+# create model
+from sklearn.ensemble import RandomForestClassifier
+rfc = RandomForestClassifier()
+
+# train model original data
+rfc.fit(X_train,y_train)
+
+# train model
+rfc.fit(X_train,y_train)
+
+# predict model original data
+y_pred = rfc.predict(X_test)
+
+# evaluation original data
+from sklearn.metrics import classification_report
+print(classification_report(y_test,y_pred))
+
+# step train test split of  oversample data
+from sklearn.model_selection import train_test_split
+X_train,X_test, y_train,y_test = train_test_split(X_ros,y_ros, random_state=2529)
+
+# create model oversample data
+from sklearn.ensemble import RandomForestClassifier
+rfc = RandomForestClassifier()
+
+# train model oversample data
+rfc.fit(X_train,y_train)
+
+# predict model oversample data
+y_pred = rfc.predict(X_test)
+
+# evaluation oversample data
+from sklearn.metrics import classification_report
+print(classification_report(y_test,y_pred))
